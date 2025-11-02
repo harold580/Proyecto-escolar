@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pensando en tu Futuro - Plataforma de Aprendizaje</title>
+    <meta name="description" content="Plataforma educativa con sistema de puntos, metas semanales y recompensas para estudiantes">
+    
+    <style>
+        /* ===== VARIABLES Y CONFIGURACIÓN GENERAL ===== */
+        :root {
+            --fondo: #FFFFFF;
+            --texto: #333333;
+            --primario: #2196F3;
+            --secundario: #FF9800;
+            --card: #F5F5F5;
+            --borde: #E0E0E0;
+            --exito: #4CAF50;
+            --advertencia: #FF9800;
+            --peligro: #F44336;
+            --sombra: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        [data-tema="oscuro"] {
+            --fondo: #1A1A1A;
+            --texto: #FFFFFF;
+            --primario: #64B5F6;
+            --secundario: #FFB74D;
+            --card: #2D2D2D;
+            --borde: #404040;
+            --exito: #81C784;
+            --advertencia: #FFB74D;
+            --peligro: #E57373;
+            --sombra: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* ===== RESET Y BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background-color: var(--fondo);
+            color: var(--texto);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ===== LAYOUT Y CONTENEDORES ===== */
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .pantalla {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .pantalla.activa {
+            display: block;
+        }
+
+        /* ===== COMPONENTES DE HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primario);
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--texto);
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: var(--card);
+        }
+
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--texto);
+            padding: 5px;
+        }
+
+        /* ===== COMPONENTES DE BÚSQUEDA ===== */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            background: var(--card);
+            border: 1px solid var(--borde);
+            border-radius: 25px;
+            padding: 12px 45px 12px 20px;
+            width: 100%;
+            color: var(--texto);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-bar:focus {
+            border-color: var(--primario);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--texto);
+            opacity: 0.7;
+        }
+
+        /* ===== SECCIÓN DE PUNTOS INTERACTIVA ===== */
+        .puntos-section {
+            background: linear-gradient(135deg, var(--primario), var(--secundario));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--sombra);
+        }
+
+        .puntos-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .puntos-section h2 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        /* ===== NOTIFICACIONES INTELIGENTES ===== */
+        .notificacion-meta {
+            background: linear-gradient(135deg, var(--advertencia), var(--secundario));
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: slideDown 0.5s ease-out;
+            box-shadow: var(--sombra);
+        }
+
+        @keyframes slideDown {
+            from { 
+                transform: translateY(-20px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
+        }
+
+        /* ===== SISTEMA DE METAS SEMANALES ===== */
+        .meta-container {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: var(--sombra);
+        }
+
+        .meta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .barra-progreso {
+            background: var(--borde);
+            border-radius: 10px;
+            height: 12px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progreso-llenado {
+            background: linear-gradient(90deg, var(--primario), var(--secundario));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        /* ===== GRILLA DE MATERIAS ===== */
+        .materias-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .materia-card {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--borde);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--sombra);
+        }
+
+        .materia-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primario);
+        }
+
+        .materia-card h3 {
+            color: var(--primario);
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .materia-card p {
+            font-size: 12px;
+            color: var(--texto);
+            opacity: 0.8;
+        }
+
+        /* ===== COMPONENTES DE MENÚ Y CONFIGURACIÓN ===== */
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--texto);
+            font-weight: 600;
+        }
+
+        .menu-item, .config-item {
+            background: var(--card);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--borde);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover, .config-item:hover {
+            background: var(--fondo);
+            border-color: var(--primario);
+        }
+
+        /* ===== SISTEMA DE SUBTEMAS Y PREGUNTAS ===== */
+        .subtemas-container {
+            margin-bottom: 25px;
+        }
+
+        .subtema-item {
+            background: var(--card);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--borde);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subtema-item:hover {
+            border-color: var(--primario);
+        }
+
+        .subtema-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .pregunta-item {
+            background: var(--fondo);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--primario);
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* ===== SISTEMA DE INSIGNIAS ===== */
+        .insignia {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA000);
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: brillo 2s infinite;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes brillo {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+            }
+            50% { 
+                transform: scale(1.1); 
+                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        /* ===== MODALES Y DIÁLOGOS ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-contenido {
+            background: var(--fondo);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: modalEntrada 0.3s ease-out;
+        }
+
+        @keyframes modalEntrada {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .codigo-generado {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            background: var(--card);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px dashed var(--primario);
+            color: var(--primario);
+            letter-spacing: 1px;
+        }
+
+        /* ===== BOTONES ===== */
+        .btn-primario {
+            background: var(--primario);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primario:hover {
+            background: var(--secundario);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-secundario {
+            background: var(--card);
+            color: var(--texto);
+            border: 1px solid var(--borde);
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secundario:hover {
+            border-color: var(--primario);
+            background: var(--fondo);
+        }
+
+        /* ===== FOOTER Y UTILIDADES ===== */
+        .footer-links {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--borde);
+        }
+
+        .footer-link {
+            display: block;
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-link:hover {
+            opacity: 1;
+            color: var(--primario);
+        }
+
+        .texto-exito { color: var(--exito); }
+        .texto-advertencia { color: var(--advertencia); }
+        .texto-primario { color: var(--primario); }
+
+        .oculto { display: none !important; }
+        .texto-centro { text-align: center; }
+        .mb-20 { margin-bottom: 20px; }
+    </style>
+</head>
+
+<body data-tema="claro">
+    <div id="notificacionMeta" class="notificacion-meta oculto">
+        <strong>📊 Meta Semanal</strong><br>
+        <span id="textoNotificacion">Te faltan X puntos para generar tu código</span>
+    </div>
+
+    <div id="modalCodigo" class="modal">
+        <div class="modal-contenido">
+            <h3>🎉 ¡Código Generado!</h3>
+            <p>Tu código para canjear nota ha sido creado exitosamente</p>
+            <div id="codigoDisplay" class="codigo-generado">PTF-1500-MAT-7A3B9C</div>
+            <p><strong>⏰ Válido por 24 horas</strong></p>
+            <p>Puntos descontados: <strong>1500</strong></p>
+            <button class="btn-primario" onclick="sistemaRecompensas.cerrarModal()">Entendido</button>
+        </div>
+    </div>
+
+    <div id="pantalla-inicio" class="pantalla activa">
+        <div class="container">
+            <div class="header">
+                <div class="logo">Pensando en tu Futuro</div>
+                <button class="icon-btn" onclick="navegacion.mostrarPantalla('configuraciones')" title="Configuraciones">
+                    ⚙️
+                </button>
+            </div>
+
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="🔍 Buscar cursos, materias...">
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <div class="puntos-section" onclick="preguntas.iniciarPreguntaAleatoria()">
+                <h2>¡Continúa aprendiendo!</h2>
+                <p>Tienes <strong id="puntosTotales">2500</strong> puntos</p>
+                <div style="margin-top: 10px; font-size: 12px; opacity: 0.9;">
+                    👆 Toca aquí para practicar con una pregunta aleatoria
+                </div>
+            </div>
+
+            <div class="meta-container">
+                <div class="meta-header">
+                    <h3>🎯 Meta Semanal</h3>
+                    <span id="progresoTexto">850/1500 pts</span>
+                </div>
+                <div class="barra-progreso">
+                    <div id="progresoBarra" class="progreso-llenado" style="width: 56.67%;"></div>
+                </div>
+                <div class="meta-info">
+                    <span>Recompensa: Código canjeable (+5%)</span>
+                    <span id="diasRestantes">4 días restantes</span>
+                </div>
+            </div>
+
+            <h3 class="section-title">MATERIAS</h3>
+            <div class="materias-grid">
+                <div class="materia-card" onclick="navegacion.mostrarSubtemas('fisica')">
+                    <h3>Física</h3>
+                    <p>Mecánica, termodinámica, electromagnetismo</p>
+                </div>
+                <div class="materia-card" onclick="navegacion.mostrarSubtemas('quimica')">
+                    <h3>Química</h3>
+                    <p>Orgánica, inorgánica, estequiometría</p>
+                </div>
+                <div class="materia-card" onclick="navegacion.mostrarSubtemas('matematicas')">
+                    <h3>Matemáticas</h3>
+                    <p>Álgebra, geometría, cálculo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-configuraciones" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('inicio')">←</button>
+                <h2>CONFIGURACIONES</h2>
+            </div>
+
+            <div class="config-item" onclick="navegacion.mostrarPantalla('idioma')">
+                <span>🌐 Idioma</span>
+                <span>></span>
+            </div>
+            
+            <div class="config-item" onclick="navegacion.mostrarPantalla('puntaje-total')">
+                <span>📊 Puntaje total</span>
+                <span>></span>
+            </div>
+            
+            <div class="config-item" onclick="sistemaRecompensas.generarCodigo()">
+                <span>
+                    🎫 Canjeo de Código
+                    <span id="badgeInsignia" class="insignia oculto">⭐</span>
+                </span>
+                <span>></span>
+            </div>
+
+            <div class="config-item" onclick="navegacion.mostrarPantalla('metas-semanales')">
+                <span>📈 Metas Semanales</span>
+                <span>></span>
+            </div>
+
+            <div class="config-item" onclick="navegacion.mostrarPantalla('ayuda')">
+                <span>❓ Ayuda</span>
+                <span>></span>
+            </div>
+            
+            <div class="config-item" onclick="navegacion.mostrarPantalla('notificaciones')">
+                <span>🔔 Notificaciones</span>
+                <span>></span>
+            </div>
+            
+            <div class="config-item" onclick="navegacion.mostrarPantalla('modos')">
+                <span>🎨 Modos claro/oscuro</span>
+                <span>></span>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-link" onclick="navegacion.mostrarPantalla('comentarios')">Comentarios</div>
+                <div class="footer-link" onclick="navegacion.mostrarPantalla('reportar-error')">Reportar Error</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-metas-semanales" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>METAS SEMANALES</h2>
+            </div>
+
+            <div class="meta-container texto-centro">
+                <h3 class="mb-20">🎯 Progreso Actual</h3>
+                <div style="font-size: 32px; font-weight: bold; color: var(--primario);" id="progresoNumerico">850</div>
+                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 15px;">de 1500 puntos</div>
+                <div class="barra-progreso">
+                    <div id="progresoBarraMetas" class="progreso-llenado" style="width: 56.67%;"></div>
+                </div>
+                <div style="margin-top: 10px; font-size: 12px;">
+                    <strong>4 días restantes</strong>
+                </div>
+            </div>
+
+            <h3 class="section-title">Recompensas Progresivas</h3>
+            
+            <div class="menu-item">
+                <div>
+                    <span>500 puntos</span>
+                    <div style="font-size: 12px; opacity: 0.8;">Insignia "Iniciado" para tu perfil</div>
+                </div>
+                <span class="texto-exito">✅ Obtenido</span>
+            </div>
+
+            <div class="menu-item">
+                <div>
+                    <span>1000 puntos</span>
+                    <div style="font-size: 12px; opacity: 0.8;">Acceso a contenido exclusivo</div>
+                </div>
+                <span class="texto-advertencia">🔄 En progreso</span>
+            </div>
+
+            <div class="menu-item">
+                <div>
+                    <span>1500 puntos</span>
+                    <div style="font-size: 12px; opacity: 0.8;">Código canjeable por nota +5%</div>
+                </div>
+                <span class="texto-primario">🎯 Por alcanzar</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-subtemas" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('inicio')">←</button>
+                <h2 id="titulo-materia">MATERIA</h2>
+            </div>
+
+            <div id="contenido-subtemas" class="subtemas-container">
+                <!-- El contenido se carga dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-idioma" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>🌐 IDIOMA</h2>
+            </div>
+            <div class="menu-item">
+                <span>Español (Actual)</span>
+                <span>✔</span>
+            </div>
+            <div class="menu-item">
+                <span>Inglés</span>
+                <span>></span>
+            </div>
+            <div class="menu-item">
+                <span>Francés</span>
+                <span>></span>
+            </div>
+            <div class="menu-item">
+                <span>Portugués</span>
+                <span>></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-puntaje-total" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>📊 PUNTAJE TOTAL</h2>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 40px; font-weight: bold; color: var(--primario);" id="puntosTotalDisplay">2500</div>
+                <div style="font-size: 16px; opacity: 0.8;">Puntos acumulados</div>
+            </div>
+            <div class="menu-item">
+                <span>Historial de Canjeos</span>
+                <span>></span>
+            </div>
+            <div class="menu-item">
+                <span>Logros Desbloqueados</span>
+                <span>></span>
+            </div>
+            <div class="menu-item">
+                <span>Estadísticas de Progreso</span>
+                <span>></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-ayuda" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>❓ AYUDA</h2>
+            </div>
+            <div class="menu-item">
+                <span>Preguntas Frecuentes</span>
+                <span>></span>
+            </div>
+            <div class="menu-item">
+                <span>Contactar Soporte</span>
+                <span>></span>
+            </div>
+            <div class="menu-item">
+                <span>Tutoriales</span>
+                <span>></span>
+            </div>
+            <div class="menu-item">
+                <span>Guía de Uso</span>
+                <span>></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-notificaciones" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>🔔 NOTIFICACIONES</h2>
+            </div>
+            <div class="menu-item">
+                <span>Notificaciones Generales</span>
+                <input type="checkbox" checked>
+            </div>
+            <div class="menu-item">
+                <span>Nuevos Cursos</span>
+                <input type="checkbox" checked>
+            </div>
+            <div class="menu-item">
+                <span>Logros y Recompensas</span>
+                <input type="checkbox" checked>
+            </div>
+            <div class="menu-item">
+                <span>Recordatorios de Estudio</span>
+                <input type="checkbox">
+            </div>
+            <div class="menu-item">
+                <span>Actualizaciones de la App</span>
+                <input type="checkbox" checked>
+            </div>
+        </div>
+    </div>
+    
+    <div id="pantalla-modos" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>🎨 MODOS CLARO/OSCURO</h2>
+            </div>
+
+            <div class="menu-item" onclick="tema.cambiarTema('claro')">
+                <span>Modo Claro</span>
+                <span id="check-claro">●</span>
+            </div>
+            <div class="menu-item" onclick="tema.cambiarTema('oscuro')">
+                <span>Modo Oscuro</span>
+                <span id="check-oscuro">◯</span>
+            </div>
+            <div class="menu-item">
+                <span>Automático</span>
+                <span>◯</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-comentarios" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>💬 COMENTARIOS</h2>
+            </div>
+            <div style="background: var(--card); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                <h3 style="margin-bottom: 10px;">¡Tu opinión nos importa!</h3>
+                <p style="font-size: 14px; opacity: 0.8; margin-bottom: 15px;">Comparte tus sugerencias para mejorar la plataforma</p>
+                <textarea placeholder="Escribe tu comentario aquí..." style="width: 100%; height: 100px; padding: 12px; border-radius: 8px; border: 1px solid var(--borde); background: var(--fondo); color: var(--texto); resize: vertical;"></textarea>
+                <button class="btn-primario" style="margin-top: 10px; width: 100%;">Enviar Comentario</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-reportar-error" class="pantalla">
+        <div class="container">
+            <div class="back-header">
+                <button class="back-btn" onclick="navegacion.mostrarPantalla('configuraciones')">←</button>
+                <h2>⚠️ REPORTAR ERROR</h2>
+            </div>
+            <div style="background: var(--card); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                <h3 style="margin-bottom: 10px;">Reportar un problema</h3>
+                <p style="font-size: 14px; opacity: 0.8; margin-bottom: 15px;">Describe el error que encontraste para ayudarnos a mejorar</p>
+                <input type="text" placeholder="Título del problema" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--borde); background: var(--fondo); color: var(--texto); margin-bottom: 10px;">
+                <textarea placeholder="Describe el error en detalle..." style="width: 100%; height: 120px; padding: 12px; border-radius: 8px; border: 1px solid var(--borde); background: var(--fondo); color: var(--texto); resize: vertical;"></textarea>
+                <button class="btn-primario" style="margin-top: 10px; width: 100%;">Enviar Reporte</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATOS GLOBALES DEL USUARIO =====
+        const usuario = {
+            puntosTotales: 2500,
+            puntosSemana: 850,
+            metaSemanal: 1500,
+            insigniaObtenida: true,
+            codigoGenerado: false,
+            tema: localStorage.getItem('tema') || 'claro'
+        };
+
+        // ===== BASE DE DATOS DE PREGUNTAS =====
+        const preguntasDB = {
+            fisica: {
+                "Leyes de Newton": [
+                    "¿Cuál es la primera ley de Newton?",
+                    "Si aplicas una fuerza de 10N a un objeto de 2kg, ¿cuál será su aceleración?",
+                    "¿Qué establece la tercera ley de Newton sobre acción y reacción?"
+                ],
+                "Termodinámica": [
+                    "¿Qué es la temperatura en términos moleculares?",
+                    "Explica la diferencia entre calor y temperatura",
+                    "¿Qué establece la primera ley de la termodinámica?"
+                ],
+                "Electromagnetismo": [
+                    "¿Cómo se calcula la fuerza entre dos cargas eléctricas?",
+                    "Explica qué es un campo magnético",
+                    "¿Qué establece la ley de Faraday sobre inducción electromagnética?"
+                ]
+            },
+            quimica: {
+                "Química Reactiva": [
+                    "¿Qué es una reacción química exotérmica?",
+                    "Balancea la ecuación: H2 + O2 → H2O",
+                    "¿Qué factores afectan la velocidad de una reacción química?"
+                ],
+                "Química Orgánica": [
+                    "¿Qué es un hidrocarburo y da un ejemplo?",
+                    "Explica la diferencia entre alcanos, alquenos y alquinos",
+                    "¿Qué son los grupos funcionales en química orgánica?"
+                ],
+                "Estequiometría": [
+                    "Calcula la masa molar del H2SO4",
+                    "¿Cuántos moles hay en 100 gramos de NaOH?",
+                    "¿Qué volumen ocupan 2 moles de gas ideal en condiciones normales?"
+                ]
+            },
+            matematicas: {
+                "Trigonometría": [
+                    "¿Cuál es el valor del seno de 30°?",
+                    "Resuelve: sen²θ + cos²θ = ?",
+                    "Calcula la altura de un árbol si su sombra mide 10m y el ángulo de elevación es 45°"
+                ],
+                "Álgebra Lineal": [
+                    "Resuelve el sistema: 2x + y = 5, x - y = 1",
+                    "¿Qué es una matriz identidad?",
+                    "Calcula el determinante de [[2,3],[1,4]]"
+                ],
+                "Cálculo Diferencial": [
+                    "Deriva la función f(x) = 3x² + 2x - 5",
+                    "¿Qué representa la derivada de una función?",
+                    "Encuentra los puntos críticos de f(x) = x³ - 3x"
+                ]
+            }
+        };
+
+        // ===== SISTEMA DE NAVEGACIÓN =====
+        const navegacion = {
+            mostrarPantalla(pantalla) {
+                document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+                const pantallaElement = document.getElementById(`pantalla-${pantalla}`);
+                if (pantallaElement) {
+                    pantallaElement.classList.add('activa');
+                }
+            },
+
+            mostrarSubtemas(materia) {
+                const tituloMateria = document.getElementById('titulo-materia');
+                const contenido = document.getElementById('contenido-subtemas');
+                
+                tituloMateria.textContent = materia.toUpperCase();
+                
+                let html = '';
+                const subtemas = preguntasDB[materia];
+                
+                for (const [subtema, preguntas] of Object.entries(subtemas)) {
+                    html += `
+                        <div class="subtema-item">
+                            <div class="subtema-header">
+                                <h3>${subtema}</h3>
+                                <span>></span>
+                            </div>
+                            ${preguntas.map(pregunta => 
+                                `<div class="pregunta-item">${pregunta}</div>`
+                            ).join('')}
+                        </div>
+                    `;
+                }
+                
+                contenido.innerHTML = html;
+                this.mostrarPantalla('subtemas');
+            }
+        };
+
+        // ===== SISTEMA DE RECOMPENSAS Y PUNTOS =====
+        const sistemaRecompensas = {
+            actualizarInterfaz() {
+                document.getElementById('puntosTotales').textContent = usuario.puntosTotales;
+                const puntosTotalDisplay = document.getElementById('puntosTotalDisplay');
+                if (puntosTotalDisplay) puntosTotalDisplay.textContent = usuario.puntosTotales;
+                
+                const porcentaje = (usuario.puntosSemana / usuario.metaSemanal) * 100;
+                document.getElementById('progresoBarra').style.width = `${porcentaje.toFixed(2)}%`;
+                document.getElementById('progresoTexto').textContent = 
+                    `${usuario.puntosSemana}/${usuario.metaSemanal} pts`;
+                
+                const progresoBarraMetas = document.getElementById('progresoBarraMetas');
+                if (progresoBarraMetas) progresoBarraMetas.style.width = `${porcentaje.toFixed(2)}%`;
+                const progresoNumerico = document.getElementById('progresoNumerico');
+                if (progresoNumerico) progresoNumerico.textContent = usuario.puntosSemana;
+                
+                const badgeInsignia = document.getElementById('badgeInsignia');
+                if (badgeInsignia) badgeInsignia.classList.toggle('oculto', !usuario.insigniaObtenida);
+
+                this.actualizarNotificacion();
+            },
+
+            actualizarNotificacion() {
+                const notificacion = document.getElementById('notificacionMeta');
+                const textoNotificacion = document.getElementById('textoNotificacion');
+                
+                if (usuario.puntosSemana < usuario.metaSemanal) {
+                    const puntosFaltantes = usuario.metaSemanal - usuario.puntosSemana;
+                    textoNotificacion.textContent = 
+                        `Te faltan ${puntosFaltantes} puntos para generar tu código canjeable`;
+                    notificacion.classList.remove('oculto');
+                } else {
+                    notificacion.classList.add('oculto');
+                }
+            },
+
+            generarCodigo() {
+                if (usuario.puntosSemana >= usuario.metaSemanal && usuario.puntosTotales >= 1500) {
+                    const codigo = `PTF-${usuario.metaSemanal}-${Math.floor(Math.random() * 1000).toString(36).toUpperCase()}-${Date.now().toString(36).slice(-6).toUpperCase()}`;
+                    
+                    usuario.puntosTotales -= 1500;
+                    usuario.puntosSemana = 0;
+                    usuario.codigoGenerado = true;
+                    
+                    document.getElementById('codigoDisplay').textContent = codigo;
+                    document.getElementById('modalCodigo').style.display = 'flex';
+                    
+                    this.actualizarInterfaz();
+                    
+                } else {
+                    alert(`❌ Necesitas alcanzar la meta semanal de ${usuario.metaSemanal} puntos y tener al menos 1500 puntos totales para generar un código.`);
+                }
+            },
+
+            cerrarModal() {
+                document.getElementById('modalCodigo').style.display = 'none';
+                navegacion.mostrarPantalla('configuraciones');
+            }
+        };
+
+        // ===== SISTEMA DE PREGUNTAS =====
+        const preguntas = {
+            iniciarPreguntaAleatoria() {
+                alert("🎯 ¡Función en desarrollo! Próximamente aparecerá una pregunta aleatoria con opciones múltiples.");
+            }
+        };
+
+        // ===== SISTEMA DE TEMAS =====
+        const tema = {
+            cambiarTema(modo) {
+                const nuevoTema = modo || (usuario.tema === 'claro' ? 'oscuro' : 'claro');
+                usuario.tema = nuevoTema;
+                document.body.setAttribute('data-tema', nuevoTema);
+                localStorage.setItem('tema', nuevoTema);
+                this.actualizarChecks();
+            },
+
+            inicializarTema() {
+                document.body.setAttribute('data-tema', usuario.tema);
+                this.actualizarChecks();
+            },
+            
+            actualizarChecks() {
+                const checkClaro = document.getElementById('check-claro');
+                const checkOscuro = document.getElementById('check-oscuro');
+                
+                if (checkClaro && checkOscuro) {
+                    checkClaro.textContent = usuario.tema === 'claro' ? '●' : '◯';
+                    checkOscuro.textContent = usuario.tema === 'oscuro' ? '●' : '◯';
+                }
+            }
+        };
+
+        // ===== INICIALIZACIÓN DE LA APLICACIÓN =====
+        window.addEventListener('load', function() {
+            tema.inicializarTema();
+            navegacion.mostrarPantalla('inicio');
+            sistemaRecompensas.actualizarInterfaz();
+            console.log('🚀 Pensando en tu Futuro - Aplicación cargada correctamente');
+        });
+    </script>
+</body>
+</html>
